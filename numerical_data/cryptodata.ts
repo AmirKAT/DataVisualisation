@@ -7,6 +7,8 @@ const axios = require ('axios');
 //Reads keys from .env file
 const dotenv = require('dotenv');
 
+import { FixerObject } from "./cryptotypes";
+
 //Copy variables in file into environment variables
 dotenv.config();
 
@@ -52,14 +54,13 @@ async function getHistoricalData(startDate: string, numDays: number){
         //Increase the number of days
         date.add(1, 'days');
     }
-
+    
     //Wait for all promises to execute
     try {
         let resultArray: Array<object> = await Promise.all(promiseArray);
 
         //Output the data
         resultArray.forEach((result)=>{
-            console.log(result);
             //data contains the body of the web service response
             let data: FixerObject = result['data'];
 

@@ -1,12 +1,12 @@
 //The structure of a Rates object
-interface FixerRates{
+export interface FixerRates{
     USD: number,
     CAD: number,
     GBP: number
 }
 
 //The data structure returned in the message body by fixer.io
-interface FixerObject {
+export interface FixerObject {
     success: boolean,
     error?: FixerError,
     timestamp: number,
@@ -17,7 +17,7 @@ interface FixerObject {
 }
 
 //The data structure of a fixer.io error
-interface FixerError{
+export interface FixerError{
     code: number,
     type: string,
     info: string,
