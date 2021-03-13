@@ -18,6 +18,10 @@ let client = new Twitter({
     access_token_secret: process.env.ACCESS_TOKEN_SECRET
 });
 
+interface Tweet {
+    id: number,
+    text:string
+}
 //Function downloads and outputs tweet text
 async function storeTweets(keyword: string){
     try{
@@ -32,16 +36,16 @@ async function storeTweets(keyword: string){
         let twitterResult = await client.get('search/tweets', searchParams);
 
         //Output the result
-        let promiseArray: Array< Promise<string> > = [];
+        let tweets:Tweet[] = [];
         twitterResult.statuses.forEach((tweet)=>{
             console.log("Tweet id: " + tweet.id + ". Tweet text: " + tweet.text);
 
             //Store save data promise in array
-            promiseArray.push(saveData(tweet.id, tweet.text));
+            tweets.push({id:tweet.id, text:tweet.text});
         });
 
         //Execute all of the save data promises
-        let databaseResult: Array<string> = await Promise.all(promiseArray);
+        let databaseResult: Array<string> = await Promise.all(tweets.map(async tweet => await saveData(tweet.id,tweet.text)));
         console.log("Database result: " + JSON.stringify(databaseResult));
     }
     catch(error){

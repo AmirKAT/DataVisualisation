@@ -21,18 +21,22 @@ async function searchTweets(keyword: string){
         //Set up parameters for the search
         let searchParams = {
             q: keyword,
-            count: 10,
+            count: 10000,
             lang: "en"
         };
 
         //Wait for search to execute asynchronously
         let result = await client.get('search/tweets', searchParams);
-        console.log(JSON.stringify(result));
 
-        //Output the result
-        result.statuses.forEach((tweet)=>{
-            console.log("Tweet id: " + tweet.id + ". Tweet text: " + tweet.text);
-        });
+        const tweets = result.statuses.map(tweet =>({
+            id:tweet.id, text:tweet.text
+        }))
+
+        //Output results
+        console.log(tweets);
+
+        return tweets
+        
     }
     catch(error){
         console.log(JSON.stringify(error));
@@ -40,5 +44,5 @@ async function searchTweets(keyword: string){
 };
 
 //Call function to search for tweets with specified subject
-searchTweets("Middlesex University");
+searchTweets("BTC");
 
