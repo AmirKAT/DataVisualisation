@@ -21,7 +21,7 @@ export class Coin {
     constructor(api_key: string = null) {
     }
 
-      //Base URL of coinapi.io API
+      //Base URL of coincap.io API
 
     //Returns a Promise that will get the exchange rates for the specified date
     async getExchangeRates() : Promise<CoinRates[]> {
@@ -45,13 +45,13 @@ export class Coin {
         const {data:LITECOIN_DATA} =  await axios.get(litecoinUrl);
         const {data:ETHEREUM_DATA} =  await axios.get(ethereumUrl);
         let coinRates: CoinRates[] = [];
-        for (let i =0 ; i < 1000 ; i++) {
+        for (let i =0 ; i < 1001 ; i++) {
             coinRates.push({
-                BTC: CARDANO_DATA.data[i],
-                LTC: BITCOIN_DATA.data[i],
+                BTC: BITCOIN_DATA.data[i],
+                LTC: LITECOIN_DATA.data[i],
                 XRP: XRP_DATA.data[i],
-                ETH: LITECOIN_DATA.data[i],
-                ADA: ETHEREUM_DATA.data[i]
+                ETH: ETHEREUM_DATA.data[i],
+                ADA: CARDANO_DATA.data[i]
             })
 
         }
