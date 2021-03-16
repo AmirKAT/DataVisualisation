@@ -20,7 +20,8 @@ let client = new Twitter({
 
 interface Tweet {
     id: number,
-    text:string
+    text: string,
+    created_at: Date
 }
 //Function downloads and outputs tweet text
 async function storeTweets(keyword: string){
@@ -38,14 +39,14 @@ async function storeTweets(keyword: string){
         //Output the result
         let tweets:Tweet[] = [];
         twitterResult.statuses.forEach((tweet)=>{
-            console.log("Tweet id: " + tweet.id + ". Tweet text: " + tweet.text);
+            console.log("Tweet id: " + tweet.id + ". Tweet text: " + tweet.text + ". Tweet date" + tweet.created_at);
 
             //Store save data promise in array
-            tweets.push({id:tweet.id, text:tweet.text});
+            tweets.push({id:tweet.id, text:tweet.text, created_at:tweet.created_at});
         });
 
         //Execute all of the save data promises
-        let databaseResult: Array<string> = await Promise.all(tweets.map(async tweet => await saveData(tweet.id,tweet.text)));
+        let databaseResult: Array<string> = await Promise.all(tweets.map(async tweet => await saveData(tweet.id,tweet.text,tweet.created_at)));
         console.log("Database result: " + JSON.stringify(databaseResult));
     }
     catch(error){

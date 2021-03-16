@@ -29,7 +29,7 @@ async function searchTweets(keyword: string){
         let result = await client.get('search/tweets', searchParams);
 
         const tweets = result.statuses.map(tweet =>({
-            id:tweet.id, text:tweet.text
+            id:tweet.id, text:tweet.text, created_at:tweet.created_at
         }))
 
         //Output results
