@@ -19,9 +19,10 @@ let client = new Twitter({
 });
 
 interface Tweet {
-    id: number,
-    text: string,
-    created_at: Date
+    TweetId:number,
+    Text:string, 
+    TweetTimeStamp:number,
+    Currency: string
 }
 //Function downloads and outputs tweet text
 async function storeTweets(keyword: string){
@@ -39,15 +40,16 @@ async function storeTweets(keyword: string){
         //Output the result
         let tweets:Tweet[] = [];
         twitterResult.statuses.forEach((tweet)=>{
-            console.log("Tweet id: " + tweet.id + ". Tweet text: " + tweet.text + ". Tweet date" + tweet.created_at);
-
             //Store save data promise in array
-            tweets.push({id:tweet.id, text:tweet.text, created_at:tweet.created_at});
+            tweets.push(({
+            TweetId:tweet.id, Text:tweet.text, TweetTimeStamp:new Date(tweet.created_at).valueOf(),
+            Currency: keyword
+        }));
         });
 
         //Execute all of the save data promises
-        let databaseResult: Array<string> = await Promise.all(tweets.map(async tweet => await saveData(tweet.id,tweet.text,tweet.created_at)));
-        console.log("Database result: " + JSON.stringify(databaseResult));
+        let databaseResult: Array<string> = await Promise.all(tweets.map(async tweet => await saveData(tweet.Currency, tweet.TweetId, tweet.Text, tweet.TweetTimeStamp)));
+        
     }
     catch(error){
         console.log(JSON.stringify(error));
@@ -55,5 +57,12 @@ async function storeTweets(keyword: string){
 };
 
 //Call function to search for tweets with specified subject
-storeTweets("Middlesex University");
+storeTweets("BTC");
+storeTweets("ADA");
+storeTweets("ETH");
+storeTweets("XRP");
+storeTweets("LTC");
+
+
+
 

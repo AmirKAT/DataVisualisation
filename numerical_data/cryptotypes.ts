@@ -1,10 +1,14 @@
 //The structure of a Rates object
 export interface CoinRates{
-    BTC: number,
-    LTC: number,
-    XRP: number,
-    ETH: number,
-    ADA: number
+    BTC: CoinDetail,
+    LTC: CoinDetail,
+    XRP: CoinDetail,
+    ETH: CoinDetail,
+    ADA: CoinDetail
 }
 
-
+export interface CoinDetail {
+    currency: string,
+    PriceTimeStamp: number,
+    price: string
+}

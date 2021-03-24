@@ -1,3 +1,5 @@
+import { saveData } from "./database_function";
+
 //Module that reads keys from .env file
 const dotenv = require('dotenv');
 
@@ -16,26 +18,55 @@ let client = new Twitter({
 });
 
 //Downloads and outputs tweet text
-async function searchTweets(keyword: string){
+async function searchTweets(){
     try{
         //Set up parameters for the search
         let searchParams = {
-            q: keyword,
             count: 10000,
             lang: "en"
         };
-
+        
         //Wait for search to execute asynchronously
-        let result = await client.get('search/tweets', searchParams);
+        let btc = await client.get('search/tweets', {...searchParams, q:"BTC"});
+        const btcTweets = btc.statuses.map(tweet =>{
+            return({
+            TweetId:tweet.id, Text:tweet.text, TweetTimeStamp:new Date(tweet.created_at).valueOf(),
+            Currency: "BTC"
+        })})
+         let ltc = await client.get('search/tweets', {...searchParams, q:"LTC"});
+        const ltcTweets = ltc.statuses.map(tweet =>{
+            return({
+            TweetId:tweet.id, Text:tweet.text, TweetTimeStamp:new Date(tweet.created_at).valueOf(),
+            Currency: "LTC"
+        })})
+         let xrp = await client.get('search/tweets', {...searchParams, q:"XRP"});
+        const xrpTweets = xrp.statuses.map(tweet =>{
+            return({
+            TweetId:tweet.id, Text:tweet.text, TweetTimeStamp:new Date(tweet.created_at).valueOf(),
+            Currency: "XRP"
+        })})
+         let ada = await client.get('search/tweets', {...searchParams, q:"ADA"});
+        const adaTweets = ada.statuses.map(tweet =>{
+            return({
+            TweetId:tweet.id, Text:tweet.text, TweetTimeStamp:new Date(tweet.created_at).valueOf(),
+            Currency: "ADA"
+        })})
+         let eth = await client.get('search/tweets', {...searchParams, q:"ETH"});
+        const ethTweets = eth.statuses.map(tweet =>{
+            return({
+            TweetId:tweet.id, Text:tweet.text, TweetTimeStamp:new Date(tweet.created_at).valueOf(),
+            Currency: "ETH"
+        })})
 
-        const tweets = result.statuses.map(tweet =>({
-            id:tweet.id, text:tweet.text, created_at:tweet.created_at
-        }))
 
         //Output results
-        console.log(tweets);
-
-        return tweets
+        return  {
+            BTC: btcTweets,
+            LTC: ltcTweets,
+            XRP: xrpTweets,
+            ETH: ethTweets,
+            ADA: adaTweets
+        }
         
     }
     catch(error){
@@ -44,5 +75,6 @@ async function searchTweets(keyword: string){
 };
 
 //Call function to search for tweets with specified subject
-searchTweets("BTC");
+searchTweets() ;
 
+saveData("BTC", 1234345543, "Hello BTC", 140232323);

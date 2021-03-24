@@ -9,11 +9,12 @@ const dotenv = require('dotenv');
 
 import { deflateSync } from "node:zlib";
 import { CoinRates } from "./cryptotypes";
+import { saveData } from "./database_function";
 
 //Copy variables in file into environment variables
 dotenv.config();
 
-//Class that wraps fixer.io web service
+//Class that wraps coincap.io web service
 export class Coin {
 
     
@@ -39,33 +40,42 @@ export class Coin {
         
         let ethereumUrl:string = "https://api.coincap.io/v2/assets/ethereum/history?interval=m1"
         //Output URL and return Promise
-        const {data:CARDANO_DATA} =  await axios.get(cardanoUrl);
-        const {data:BITCOIN_DATA} =  await axios.get(bitcoinUrl);
-        const {data:XRP_DATA} =  await axios.get(xrpUrl);
-        const {data:LITECOIN_DATA} =  await axios.get(litecoinUrl);
-        const {data:ETHEREUM_DATA} =  await axios.get(ethereumUrl);
+        let {data:CARDANO_DATA} =  await axios.get(cardanoUrl);
+        let {data:BITCOIN_DATA} =  await axios.get(bitcoinUrl);
+        let {data:XRP_DATA} =  await axios.get(xrpUrl);
+        let {data:LITECOIN_DATA} =  await axios.get(litecoinUrl);
+        let {data:ETHEREUM_DATA} =  await axios.get(ethereumUrl);
         let coinRates: CoinRates[] = [];
         for (let i =0 ; i < 1001 ; i++) {
+            await saveData("BTC", BITCOIN_DATA.data[i].time, BITCOIN_DATA.data[i].price)
+            await saveData("BTC", LITECOIN_DATA.data[i].time, LITECOIN_DATA.data[i].price)
+            await saveData("BTC", XRP_DATA.data[i].time, XRP_DATA.data[i].price)
+            await saveData("BTC", ETHEREUM_DATA.data[i].time, ETHEREUM_DATA.data[i].price)
+            await saveData("BTC", CARDANO_DATA.data[i].time, CARDANO_DATA.data[i].price)
             coinRates.push({
-                BTC: BITCOIN_DATA.data[i],
-                LTC: LITECOIN_DATA.data[i],
-                XRP: XRP_DATA.data[i],
-                ETH: ETHEREUM_DATA.data[i],
-                ADA: CARDANO_DATA.data[i]
+                BTC: restructureData({currency: "BTC", ...BITCOIN_DATA.data[i]}) ,
+                LTC: restructureData({currency: "LTC", ...LITECOIN_DATA.data[i]}),
+                XRP: restructureData({currency: "XRP", ...XRP_DATA.data[i]}),
+                ETH: restructureData({currency: "ETH", ...ETHEREUM_DATA.data[i]}),
+                ADA: restructureData({currency: "ADA", ...CARDANO_DATA.data[i]})
             })
 
         }
+        
 
         return coinRates;
 
     }
 }
-
+const restructureData = ({currency, time:PriceTimeStamp, priceUsd:price} ) => {
+    return ({
+    currency,
+    PriceTimeStamp,
+    price
+})}
 
 //Gets the historical data for a range of dates.
 async function getHistoricalData(startDate: string, numDays: number){
-    /* You should check that the start date plus the number of days is
-    less than the current date*/
 
     //Create moment date, which will enable us to add days easily.
     let dates = [moment(startDate).format()];
