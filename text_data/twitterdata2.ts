@@ -19,14 +19,14 @@ let client = new Twitter({
 });
 
 interface Tweet {
-    TweetId:number,
-    Text:string, 
-    TweetTimeStamp:number,
+    TweetId: number,
+    Text: string,
+    TweetTimeStamp: number,
     Currency: string
 }
 //Function downloads and outputs tweet text
-async function storeTweets(keyword: string){
-    try{
+async function storeTweets(keyword: string) {
+    try {
         //Set up parameters for the search
         let searchParams = {
             q: keyword,
@@ -38,20 +38,20 @@ async function storeTweets(keyword: string){
         let twitterResult = await client.get('search/tweets', searchParams);
 
         //Output the result
-        let tweets:Tweet[] = [];
-        twitterResult.statuses.forEach((tweet)=>{
+        let tweets: Tweet[] = [];
+        twitterResult.statuses.forEach((tweet) => {
             //Store save data promise in array
             tweets.push(({
-            TweetId:tweet.id, Text:tweet.text, TweetTimeStamp:new Date(tweet.created_at).valueOf(),
-            Currency: keyword
-        }));
+                TweetId: tweet.id, Text: tweet.text, TweetTimeStamp: new Date(tweet.created_at).valueOf(),
+                Currency: keyword
+            }));
         });
 
         //Execute all of the save data promises
         let databaseResult: Array<string> = await Promise.all(tweets.map(async tweet => await saveData(tweet.Currency, tweet.TweetId, tweet.Text, tweet.TweetTimeStamp)));
-        
+
     }
-    catch(error){
+    catch (error) {
         console.log(JSON.stringify(error));
     }
 };

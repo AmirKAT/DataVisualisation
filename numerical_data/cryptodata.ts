@@ -2,7 +2,7 @@
 const moment = require('moment');
 
 //Axios will handle HTTP requests to web service
-const axios = require ('axios');
+const axios = require('axios');
 
 //Reads keys from .env file
 const dotenv = require('dotenv');
@@ -17,65 +17,66 @@ dotenv.config();
 //Class that wraps coincap.io web service
 export class Coin {
 
-    
+
 
     constructor(api_key: string = null) {
     }
 
-      //Base URL of coincap.io API
+    //Base URL of coincap.io API
 
     //Returns a Promise that will get the exchange rates for the specified date
-    async getExchangeRates() : Promise<CoinRates[]> {
-        let litecoinUrl:string = "https://api.coincap.io/v2/assets/litecoin/history?interval=m1"
+    async getExchangeRates(): Promise<CoinRates[]> {
+        let litecoinUrl: string = "https://api.coincap.io/v2/assets/litecoin/history?interval=m1"
         //Output URL and return Promise
-        
-        let bitcoinUrl:string = "https://api.coincap.io/v2/assets/bitcoin/history?interval=m1"
+
+        let bitcoinUrl: string = "https://api.coincap.io/v2/assets/bitcoin/history?interval=m1"
         //Output URL and return Promise
-        
-        let xrpUrl:string = "https://api.coincap.io/v2/assets/xrp/history?interval=m1"
+
+        let xrpUrl: string = "https://api.coincap.io/v2/assets/xrp/history?interval=m1"
         //Output URL and return Promise
-        
-        let cardanoUrl:string = "https://api.coincap.io/v2/assets/cardano/history?interval=m1"
+
+        let cardanoUrl: string = "https://api.coincap.io/v2/assets/cardano/history?interval=m1"
         //Output URL and return Promise
-        
-        let ethereumUrl:string = "https://api.coincap.io/v2/assets/ethereum/history?interval=m1"
+
+        let ethereumUrl: string = "https://api.coincap.io/v2/assets/ethereum/history?interval=m1"
         //Output URL and return Promise
-        let {data:CARDANO_DATA} =  await axios.get(cardanoUrl);
-        let {data:BITCOIN_DATA} =  await axios.get(bitcoinUrl);
-        let {data:XRP_DATA} =  await axios.get(xrpUrl);
-        let {data:LITECOIN_DATA} =  await axios.get(litecoinUrl);
-        let {data:ETHEREUM_DATA} =  await axios.get(ethereumUrl);
+        let { data: CARDANO_DATA } = await axios.get(cardanoUrl);
+        let { data: BITCOIN_DATA } = await axios.get(bitcoinUrl);
+        let { data: XRP_DATA } = await axios.get(xrpUrl);
+        let { data: LITECOIN_DATA } = await axios.get(litecoinUrl);
+        let { data: ETHEREUM_DATA } = await axios.get(ethereumUrl);
         let coinRates: CoinRates[] = [];
-        for (let i =0 ; i < 1001 ; i++) {
+        for (let i = 0; i < 1001; i++) {
             await saveData("BTC", BITCOIN_DATA.data[i].time, BITCOIN_DATA.data[i].price)
-            await saveData("BTC", LITECOIN_DATA.data[i].time, LITECOIN_DATA.data[i].price)
-            await saveData("BTC", XRP_DATA.data[i].time, XRP_DATA.data[i].price)
-            await saveData("BTC", ETHEREUM_DATA.data[i].time, ETHEREUM_DATA.data[i].price)
-            await saveData("BTC", CARDANO_DATA.data[i].time, CARDANO_DATA.data[i].price)
+            await saveData("LTC", LITECOIN_DATA.data[i].time, LITECOIN_DATA.data[i].price)
+            await saveData("XRP", XRP_DATA.data[i].time, XRP_DATA.data[i].price)
+            await saveData("ETH", ETHEREUM_DATA.data[i].time, ETHEREUM_DATA.data[i].price)
+            await saveData("ADA", CARDANO_DATA.data[i].time, CARDANO_DATA.data[i].price)
             coinRates.push({
-                BTC: restructureData({currency: "BTC", ...BITCOIN_DATA.data[i]}) ,
-                LTC: restructureData({currency: "LTC", ...LITECOIN_DATA.data[i]}),
-                XRP: restructureData({currency: "XRP", ...XRP_DATA.data[i]}),
-                ETH: restructureData({currency: "ETH", ...ETHEREUM_DATA.data[i]}),
-                ADA: restructureData({currency: "ADA", ...CARDANO_DATA.data[i]})
+                BTC: restructureData({ currency: "BTC", ...BITCOIN_DATA.data[i] }),
+                LTC: restructureData({ currency: "LTC", ...LITECOIN_DATA.data[i] }),
+                XRP: restructureData({ currency: "XRP", ...XRP_DATA.data[i] }),
+                ETH: restructureData({ currency: "ETH", ...ETHEREUM_DATA.data[i] }),
+                ADA: restructureData({ currency: "ADA", ...CARDANO_DATA.data[i] })
             })
 
         }
-        
+
 
         return coinRates;
 
     }
 }
-const restructureData = ({currency, time:PriceTimeStamp, priceUsd:price} ) => {
+const restructureData = ({ currency, time: priceTimeStamp, priceUsd: price }) => {
     return ({
-    currency,
-    PriceTimeStamp,
-    price
-})}
+        currency,
+        priceTimeStamp,
+        price
+    })
+}
 
 //Gets the historical data for a range of dates.
-async function getHistoricalData(startDate: string, numDays: number){
+async function getHistoricalData(startDate: string, numDays: number) {
 
     //Create moment date, which will enable us to add days easily.
     let dates = [moment(startDate).format()];
@@ -86,14 +87,14 @@ async function getHistoricalData(startDate: string, numDays: number){
     let coinIo: Coin = new Coin();
     //Array to hold promises
 
-    
+
 
     //Wait for all promises to execute
     try {
         const data = await coinIo.getExchangeRates()
         console.log(data);
     }
-    catch(error){
+    catch (error) {
         console.log("Error: " + JSON.stringify(error));
     }
 }
