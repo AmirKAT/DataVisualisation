@@ -16,8 +16,8 @@ export function saveData(currency: any, priceTimeStamp: any, price: any,): Promi
         TableName: "crypto_numerical",
         Item: {
             Currency: currency,//PARTITION
-            PriceTimeStamp: priceTimeStamp, //date of tweet//SORT
-            Price: price,//Text of tweet
+            PriceTimeStamp: priceTimeStamp,
+            Price: price,
         }
     };
 

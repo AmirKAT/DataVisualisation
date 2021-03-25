@@ -46,12 +46,12 @@ export class Coin {
         let { data: LITECOIN_DATA } = await axios.get(litecoinUrl);
         let { data: ETHEREUM_DATA } = await axios.get(ethereumUrl);
         let coinRates: CoinRates[] = [];
-        for (let i = 0; i < 1001; i++) {
-            await saveData("BTC", BITCOIN_DATA.data[i].time, BITCOIN_DATA.data[i].price)
-            await saveData("LTC", LITECOIN_DATA.data[i].time, LITECOIN_DATA.data[i].price)
-            await saveData("XRP", XRP_DATA.data[i].time, XRP_DATA.data[i].price)
-            await saveData("ETH", ETHEREUM_DATA.data[i].time, ETHEREUM_DATA.data[i].price)
-            await saveData("ADA", CARDANO_DATA.data[i].time, CARDANO_DATA.data[i].price)
+        for (let i = 0; i < 1000; i++) {
+            await saveData("BTC", BITCOIN_DATA.data[i].time, BITCOIN_DATA.data[i].priceUsd)
+            await saveData("LTC", LITECOIN_DATA.data[i].time, LITECOIN_DATA.data[i].priceUsd)
+            await saveData("XRP", XRP_DATA.data[i].time, XRP_DATA.data[i].priceUsd)
+            await saveData("ETH", ETHEREUM_DATA.data[i].time, ETHEREUM_DATA.data[i].priceUsd)
+            await saveData("ADA", CARDANO_DATA.data[i].time, CARDANO_DATA.data[i].priceUsd)
             coinRates.push({
                 BTC: restructureData({ currency: "BTC", ...BITCOIN_DATA.data[i] }),
                 LTC: restructureData({ currency: "LTC", ...LITECOIN_DATA.data[i] }),
@@ -101,3 +101,5 @@ async function getHistoricalData(startDate: string, numDays: number) {
 
 //Call function to get historical data
 getHistoricalData('2015-12-24', 0);
+
+console.log("Data sent to DynamoDB Database");
