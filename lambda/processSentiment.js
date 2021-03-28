@@ -8,18 +8,13 @@ let documentClient = new AWS.DynamoDB.DocumentClient();
 //Function that will be called
 exports.handler = (event) => {
     console.log(JSON.stringify(event));
-    event.Records.array.forEach(record => {
-        //return message if no new data found
-        if (record.dynamodb.NewImage === undefined) {
-            console.log("No new data found");
-            return;
-        }
+    event.Records.forEach(record => {
 
         //twitter table data
         let currency = record.dynamodb.NewImage.Currency.S;
         let tweetTimeStamp = Number(record.dynamodb.NewImage.TweetTimeStamp.N);
         let text = record.dynamodb.NewImage.Text.S;
-        let tweetID = record.dynamodb.NewImage.TweetID.S;
+        let tweetID = record.dynamodb.NewImage.TweetID.N;
 
         //params for calls to aws comprehend
         let params = {
@@ -32,17 +27,16 @@ exports.handler = (event) => {
             //Log result or error
             if (err) {
                 console.log("\nError with call to Comprehend:\n" + JSON.stringify(err));
-            }
-            else {
+            } else {
                 let sentimentText = data;
 
                 //name of table for tweets
                 let params = {
                     TableName: "crypto_sentiment",
                     Item: {
+                        TweetID: tweetID,
                         Currency: currency,
                         TweetTimeStamp: tweetTimeStamp,
-                        TweetID: tweetID,
                         TweetSentiment: sentimentText
                     }
                 };
@@ -52,12 +46,11 @@ exports.handler = (event) => {
                     documentClient.put(params, (err, data) => {
                         if (err) {
                             reject("Unable to add data to table: " + JSON.stringify(err));
-                        }
-                        else {
+                        } else {
                             resolve("Data added to table: " + params.Item.Currency);
                         }
-                    })
-                })
+                    });
+                });
 
             }
         });
@@ -65,5 +58,3 @@ exports.handler = (event) => {
     });
 
 };
-
-
