@@ -30,7 +30,6 @@ module.exports.scanData = async(currency) => {
     console.log("Scanning data from numerical database");
     let params = {
         TableName: "crypto_numerical",
-        IndexName: "Currency-PriceTimeStamp-index",
         KeyConditionExpression: "Currency = :curr",
         ExpressionAttributeValues: {
             ":curr": currency

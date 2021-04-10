@@ -31,7 +31,6 @@ module.exports.scanData = async(currency) => {
     console.log("Scanning data from sentiment database");
     let params = {
         TableName: "crypto_sentiment",
-        IndexName: "Currency-TweetTimeStamp-index",
         KeyConditionExpression: "Currency = :curr",
         ExpressionAttributeValues: {
             ":curr": currency,
