@@ -5,7 +5,7 @@ let documentClient = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = async (event) => {
     //get the connection id from event
-    let connectId = event.requestContext.connectionID;
+    let connectId = event.requestContext.connectionId;
     console.log("Client has connected with ID: " + connectId);
     
     //parameters for storing the ids in database
@@ -26,6 +26,7 @@ exports.handler = async (event) => {
             body: "Client has connected with ID: " + connectId
         };
     } catch (err) {
+        console.log(err)
         return{
             statusCode: 500,
             body: "Server Error: " + JSON.stringify(err)
