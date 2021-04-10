@@ -1,5 +1,5 @@
 //Import external library with websocket functions
-let ws = require('websocket');
+let ws = require('./websocket');
 
 //Hard coded domain name and stage - use when pushing messages from server to client
 let domainName = "vfvnoa39we.execute-api.us-east-1.amazonaws.com";
@@ -21,6 +21,7 @@ exports.handler = async (event) => {
         await Promise.all(sendMsgPromises);
     }
     catch(err){
+        console.log(err);
         return { statusCode: 500, body: "Error: " + JSON.stringify(err) };
     }
 

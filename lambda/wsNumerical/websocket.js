@@ -1,7 +1,7 @@
 let AWS = require("aws-sdk");
 
 //Import functions for database
-let db = require('database');
+let db = require('./database');
 
 module.exports.getSendMessagePromises = async (domainName, stage, currency) => {
     //Get connection IDs of clients
@@ -23,7 +23,7 @@ module.exports.getSendMessagePromises = async (domainName, stage, currency) => {
 
             //Create parameters for API Gateway
             let apiMsg = {
-                ConnectionID: item.ConnectionID,
+                ConnectionId: item.ConnectionID,
                 Data: JSON.stringify(message)
             };
 
@@ -37,7 +37,7 @@ module.exports.getSendMessagePromises = async (domainName, stage, currency) => {
             //Delete connection ID from database
             if(err.statusCode == 410) {
                 try {
-                    await db.deleteConnectionID(item.ConnectionID);
+                    await db.deleteConnectionId(item.ConnectionID);
                 }
                 catch (err) {
                     console.log("ERROR deleting connectionId: " + JSON.stringify(err));

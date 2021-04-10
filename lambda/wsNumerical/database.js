@@ -18,7 +18,7 @@ module.exports.deleteConnectionId = async (connectionId) => {
     let params = {
         TableName: "websocket_clients",
         Key: {
-            ConnectionID: connectionId
+            ConnectionId: connectionId
         }
     };
     return documentClient.delete(params).promise();
@@ -36,6 +36,6 @@ module.exports.scanData = async(currency) => {
             ":curr": currency
         }
     };
-    
-    return documentClient.Query(params).promise();
+    console.log({params});
+    return documentClient.query(params).promise();
 };
