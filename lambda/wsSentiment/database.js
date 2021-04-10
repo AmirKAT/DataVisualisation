@@ -8,6 +8,7 @@ module.exports.getConnectionIds = async () => {
     let params = {
         TableName: "websocket_clients"
     }
+    console.log('getConnectionIds called')
     return documentClient.scan(params).promise();
 };
 
@@ -33,9 +34,10 @@ module.exports.scanData = async(currency) => {
         IndexName: "Currency-TweetTimeStamp-index",
         KeyConditionExpression: "Currency = :curr",
         ExpressionAttributeValues: {
-            ":curr": currency
-        }
+            ":curr": currency,
+            
+        },
     };
     
-    return documentClient.Query(params).promise();
+    return documentClient.query(params).promise();
 };
