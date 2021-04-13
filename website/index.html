@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Data Visualisation</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="style/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- CSS file -->
+  <link href="style/style.css" rel="stylesheet">
+  
+  <!-- plotly script -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<body id="page-container">
+  <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Crypto Data Visualisation</a>
+  </header>
+  <div class="container-fluid">
+    <div class="row">
+      <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+        <div class="position-sticky pt-3">
+          <ul class="nav flex-column">
+            <label for="selector">Select Currency</label><select id="selector" onchange="handleSelectChange()">
+              <option value="LTC">
+                LTC
+              </option>
+              <option value="BTC">
+                BTC
+              </option>
+              <option value="XRP">
+                XRP
+              </option>
+              <option value="ETH">
+                ETH
+              </option>
+              <option value="ADA">
+                ADA
+              </option>
+            </select>
+          </ul>
+        </div>
+      </nav>
+
+      <div
+        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Crypto Dashboard</h1>
+      </div>
+      <div class="container">
+        <div class="chart1" id="numericalgraph">
+          <h3>Numerical Data</h3>
+        </div>
+        <div class="chart2" id="sentimentpie">
+          <h3>Sentiment Data</h3>
+        </div>
+      </div>
+
+      <script>
+        var chart1 = document.getElementById('numericalgraph');
+        var chart2 = document.getElementById('sentimentpie');
+      </script>
+
+      <script>
+        window.onload = (event) => {
+          var conection;
+          //connecting to websocket api
+          connection = new WebSocket('wss://r7276wtah1.execute-api.us-east-1.amazonaws.com/dev');
+          window.connection = connection;
+          connection.addEventListener('message', handleChange);
+          connection.addEventListener('open', function (event) {
+            console.log("Connected");
+            loadValues("LTC");
+          });
+        }
+        function handleChange(event) {
+          var data = JSON.parse(event.data);
+          if (data[0].Price) {
+            var x = [], y = [];
+            data.forEach(element => {
+              x.push(new Date(element.PriceTimeStamp));
+              y.push(element.Price);
+            });
+            Plotly.newPlot(chart1, [{
+              x,
+              y
+            }], {
+              margin: { t: 0 },
+            });
+
+          }
+          else if (data[0].TweetSentiment) {
+            const countOccurrences = arr => arr.reduce((prev, curr) => (prev[curr.TweetSentiment.Sentiment] = ++prev[curr.TweetSentiment.Sentiment] || 1, prev), {});
+
+            var values = [], labels = [], frequency = countOccurrences(data);
+            for (const [key, value] of Object.entries(frequency)) {
+              console.log(`${key}: ${value}`);
+              labels.push(key);
+              values.push(value);
+            }
+            var payload = [{
+              values,
+              labels,
+              type: 'pie'
+            }];
+            console.log(payload);
+            Plotly.newPlot(chart2, payload, {
+              margin: {
+              },
+              height: 600,
+              width: 600
+            });
+          }
+        }
+        //calling data filtered by specific name of currency
+        function handleSelectChange() {
+          var x = document.getElementById("selector").value;
+          loadValues(x);
+        }
+        //getting all the data from both numerical and sentiment tables in database
+        function loadValues(currency) {
+          window.connection.send(JSON.stringify({ "action": "getNumerical", "data": currency }))
+          window.connection.send(JSON.stringify({ "action": "getSentiment", "data": currency }))
+        }
+      </script>
+      <footer id="footer">
+        By Amir Katal CST3130 CW2
+      </footer>
+    </div>
+  </div>
+</body>
+
+</html>

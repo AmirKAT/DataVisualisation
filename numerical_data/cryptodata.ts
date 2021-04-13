@@ -7,7 +7,6 @@ const axios = require('axios');
 //Reads keys from .env file
 const dotenv = require('dotenv');
 
-import { deflateSync } from "node:zlib";
 import { CoinRates } from "./cryptotypes";
 import { saveData } from "./database_function";
 
@@ -26,19 +25,19 @@ export class Coin {
 
     //Returns a Promise that will get the exchange rates for the specified date
     async getExchangeRates(): Promise<CoinRates[]> {
-        let litecoinUrl: string = "https://api.coincap.io/v2/assets/litecoin/history?interval=m1"
+        let litecoinUrl: string = "https://api.coincap.io/v2/assets/litecoin/history?interval=d1"
         //Output URL and return Promise
 
-        let bitcoinUrl: string = "https://api.coincap.io/v2/assets/bitcoin/history?interval=m1"
+        let bitcoinUrl: string = "https://api.coincap.io/v2/assets/bitcoin/history?interval=d1"
         //Output URL and return Promise
 
-        let xrpUrl: string = "https://api.coincap.io/v2/assets/xrp/history?interval=m1"
+        let xrpUrl: string = "https://api.coincap.io/v2/assets/xrp/history?interval=d1"
         //Output URL and return Promise
 
-        let cardanoUrl: string = "https://api.coincap.io/v2/assets/cardano/history?interval=m1"
+        let cardanoUrl: string = "https://api.coincap.io/v2/assets/cardano/history?interval=d1"
         //Output URL and return Promise
 
-        let ethereumUrl: string = "https://api.coincap.io/v2/assets/ethereum/history?interval=m1"
+        let ethereumUrl: string = "https://api.coincap.io/v2/assets/ethereum/history?interval=d1"
         //Output URL and return Promise
         let { data: CARDANO_DATA } = await axios.get(cardanoUrl);
         let { data: BITCOIN_DATA } = await axios.get(bitcoinUrl);
@@ -102,4 +101,4 @@ async function getHistoricalData(startDate: string, numDays: number) {
 //Call function to get historical data
 getHistoricalData('2015-12-24', 0);
 
-console.log("Data sent to DynamoDB Database");
+console.log("Data being sent to DynamoDB Database");
