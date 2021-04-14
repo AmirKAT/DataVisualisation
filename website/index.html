@@ -3,15 +3,10 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Data Visualisation</title>
+  <title>Data Visualisation</title><!-- Bootstrap core CSS -->
+  <link href="style/bootstrap.min.css" rel="stylesheet"><!-- CSS file -->
+  <link href="style/style.css" rel="stylesheet"><!-- plotly script -->
 
-  <!-- Bootstrap core CSS -->
-  <link href="style/bootstrap.min.css" rel="stylesheet">
-  
-  <!-- CSS file -->
-  <link href="style/style.css" rel="stylesheet">
-  
-  <!-- plotly script -->
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 
@@ -24,7 +19,8 @@
       <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
         <div class="position-sticky pt-3">
           <ul class="nav flex-column">
-            <label for="selector">Select Currency</label><select id="selector" onchange="handleSelectChange()">
+            <h4><span class="label label-default">Select Currency</span></h4>
+            <select class="btn btn-secondary dropdown-toggle" id="selector" onchange="handleSelectChange()">
               <option value="LTC">
                 LTC
               </option>
@@ -44,7 +40,6 @@
           </ul>
         </div>
       </nav>
-
       <div
         class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2">Crypto Dashboard</h1>
@@ -57,33 +52,37 @@
           <h3>Sentiment Data</h3>
         </div>
       </div>
-
       <script>
         var chart1 = document.getElementById('numericalgraph');
         var chart2 = document.getElementById('sentimentpie');
       </script>
-
       <script>
+
+
+        // On browser load, make the socket connection and make a initial call with LTC currency.
         window.onload = (event) => {
           var conection;
-          //connecting to websocket api
+          // Creting the websocket connection
           connection = new WebSocket('wss://r7276wtah1.execute-api.us-east-1.amazonaws.com/dev');
-          window.connection = connection;
-          connection.addEventListener('message', handleChange);
+          window.connection = connection;     // making the connection globally accessible
+          connection.addEventListener('message', handleChange);      // Whenever a message is received from server, handleChange function will be called.
           connection.addEventListener('open', function (event) {
             console.log("Connected");
+            // On initial connection, retrieve LTC currency data.
             loadValues("LTC");
           });
         }
         function handleChange(event) {
-          var data = JSON.parse(event.data);
+          console.log("Called");
+          var data = JSON.parse(event.data); //server sends data as json string, so need to parse before processing.
+          // data from numerical data
           if (data[0].Price) {
             var x = [], y = [];
             data.forEach(element => {
-              x.push(new Date(element.PriceTimeStamp));
+              x.push(new Date(element.PriceTimeStamp));   // creating Date object from unix value.
               y.push(element.Price);
             });
-            Plotly.newPlot(chart1, [{
+            Plotly.newPlot(chart1, [{           // creating new chart for chart1 variable. 
               x,
               y
             }], {
@@ -91,7 +90,9 @@
             });
 
           }
+          // if the data if for sentiment data, enter here
           else if (data[0].TweetSentiment) {
+            // calculating frequency of raw data i.e. how much POSITIVE, how much NEUTRAL etc.
             const countOccurrences = arr => arr.reduce((prev, curr) => (prev[curr.TweetSentiment.Sentiment] = ++prev[curr.TweetSentiment.Sentiment] || 1, prev), {});
 
             var values = [], labels = [], frequency = countOccurrences(data);
@@ -105,8 +106,7 @@
               labels,
               type: 'pie'
             }];
-            console.log(payload);
-            Plotly.newPlot(chart2, payload, {
+            Plotly.newPlot(chart2, payload, {   // creating new chart for chart2 variable
               margin: {
               },
               height: 600,
@@ -114,15 +114,15 @@
             });
           }
         }
-        //calling data filtered by specific name of currency
         function handleSelectChange() {
           var x = document.getElementById("selector").value;
+          // call server for new values at every currency change
           loadValues(x);
         }
-        //getting all the data from both numerical and sentiment tables in database
         function loadValues(currency) {
-          window.connection.send(JSON.stringify({ "action": "getNumerical", "data": currency }))
-          window.connection.send(JSON.stringify({ "action": "getSentiment", "data": currency }))
+          // sending message to server, making json to json string before sending.
+          window.connection.send(JSON.stringify({ "action": "getNumerical", "data": currency }));
+          window.connection.send(JSON.stringify({ "action": "getSentiment", "data": currency }));
         }
       </script>
       <footer id="footer">
